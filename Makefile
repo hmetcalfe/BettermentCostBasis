@@ -1,23 +1,23 @@
-export GO111MODULE=on
+GO = GO111MODULE=on go
 
 all : build lint test clean
 
 build:
 	mkdir -p bin
-	GOOS=darwin GOARCH=amd64 go build -o bin/bettermentCostBasis.mac cmd/bettermentCostBasis.go
-	GOOS=linux GOARCH=amd64 go build -o bin/bettermentCostBasis cmd/bettermentCostBasis.go
-	GOOS=windows GOARCH=amd64 go build -o bin/bettermentCostBasis.exe cmd/bettermentCostBasis.go
+	GOOS=darwin GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis.mac cmd/bettermentCostBasis.go
+	GOOS=linux GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis cmd/bettermentCostBasis.go
+	GOOS=windows GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis.exe cmd/bettermentCostBasis.go
 
 tidy:
-	go run tidy
+	@$(GO) mod tidy
 
 lint:
 	golangci-lint run --verbose --fix --deadline=5m
 
 test:
-	go test -coverprofile=coverage.out ./...
+	@$(GO) test -coverprofile=coverage.out ./...
 
 clean:
-	go clean
+	@$(GO) clean
 
 .PHONY: all build lint test clean
