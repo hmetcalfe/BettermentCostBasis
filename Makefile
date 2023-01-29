@@ -4,9 +4,9 @@ all : build lint test clean
 
 build:
 	mkdir -p bin
-	GOOS=darwin GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis.mac cmd/bettermentCostBasis.go
-	GOOS=linux GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis cmd/bettermentCostBasis.go
-	GOOS=windows GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis.exe cmd/bettermentCostBasis.go
+	GOOS=darwin GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis.mac cmd/betterment-cost-basis.go
+	GOOS=linux GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis cmd/betterment-cost-basis.go
+	GOOS=windows GOARCH=amd64 $(GO) build -o bin/bettermentCostBasis.exe cmd/betterment-cost-basis.go
 
 tidy:
 	@$(GO) mod tidy
