@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -23,10 +24,11 @@ const (
 )
 
 type asset struct {
-	Symbol      string
-	NumAssets   float64
-	CostBasis   float64
-	MarketValue float64
+	Symbol            string
+	NumAssets         float64
+	CostBasis         float64
+	MarketValue       float64
+	CostBasisPerShare float64
 }
 
 type account struct {
@@ -35,12 +37,17 @@ type account struct {
 	Assets        map[string]asset
 }
 
+func cleanNumberOfCommas(number string) string {
+	return strings.Replace(number, ",", "", -1)
+}
+
 func printAccountInformation(account account) {
 	const funcName = "costBasisProcessor.printAccountInformation()"
 	logEntry := log.WithField("function", funcName)
 
 	for _, asset := range account.Assets {
-		logEntry.Infof("Account: %s, Symbol: %s, Shares: %f, CostBasis: %f, MarketValue %f", account.Name, asset.Symbol, asset.NumAssets, asset.CostBasis, asset.MarketValue)
+		logEntry.Infof("Account: %s, Symbol: %s, Shares: %f, CostBasis: %f, MarketValue %f, Cost Basis Per Share %f",
+			account.Name, asset.Symbol, asset.NumAssets, asset.CostBasis, asset.MarketValue, asset.CostBasisPerShare)
 	}
 }
 
@@ -62,6 +69,7 @@ func processAccountAsset(account *account, asset asset) {
 	a.CostBasis += asset.CostBasis
 	a.MarketValue += asset.MarketValue
 	a.NumAssets += asset.NumAssets
+	a.CostBasisPerShare = (a.CostBasis / a.NumAssets)
 
 	// Reassign value
 	account.Assets[asset.Symbol] = a
@@ -73,7 +81,7 @@ func assetFromRow(row []string) (asset, error) {
 
 	symbol := row[symbolCol]
 
-	numAssets, err := strconv.ParseFloat(row[sharesCol], 64)
+	numAssets, err := strconv.ParseFloat(cleanNumberOfCommas(row[sharesCol]), 64)
 	if err != nil {
 		logText := fmt.Sprintf("Error while parsing the number of shares into a float: %s", row[sharesCol])
 		logEntry.WithError(err).Error(logText)
@@ -81,7 +89,7 @@ func assetFromRow(row []string) (asset, error) {
 		return asset{}, fmt.Errorf("%s: %w", logText, err)
 	}
 
-	costBasis, err := strconv.ParseFloat(row[costBasisCol], 64)
+	costBasis, err := strconv.ParseFloat(cleanNumberOfCommas(row[costBasisCol]), 64)
 	if err != nil {
 		logText := fmt.Sprintf("Error while parsing the cost basis into a float: %s", row[costBasisCol])
 		logEntry.WithError(err).Error(logText)
@@ -89,7 +97,7 @@ func assetFromRow(row []string) (asset, error) {
 		return asset{}, fmt.Errorf("%s: %w", logText, err)
 	}
 
-	marketValue, err := strconv.ParseFloat(row[costBasisCol], 64)
+	marketValue, err := strconv.ParseFloat(cleanNumberOfCommas(row[marketValueCol]), 64)
 	if err != nil {
 		logText := fmt.Sprintf("Error while parsing the market value into a float: %s", row[marketValueCol])
 		logEntry.WithError(err).Error(logText)
@@ -113,10 +121,17 @@ func processCSV(csvFile *os.File) error {
 
 	reader := csv.NewReader(csvFile)
 
+	firstRow := true
+
 	for {
 		row, err := reader.Read()
 		if err == io.EOF {
 			break
+		}
+
+		if firstRow {
+			firstRow = false
+			continue
 		}
 
 		logEntry.Infof("The row values %s", row)
@@ -129,7 +144,14 @@ func processCSV(csvFile *os.File) error {
 		}
 
 		// Get the account, if it doesn't exist, we create it
-		account := accounts[row[accountNumberCol]]
+		account, found := accounts[row[accountNumberCol]]
+
+		// Initialize the asset map memory
+		if !found {
+			account.Assets = make(map[string]asset)
+			account.Name = row[accountNameCol]
+			account.AccountNumber = row[accountNumberCol]
+		}
 
 		// Process the row converting it to an asset
 		asset, err := assetFromRow(row)
