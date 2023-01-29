@@ -1,0 +1,10 @@
+Account,Account #,Symbol,Shares,PurchaseDate,MarketValue,CostBasis,$UnrealizedGain/Loss,%UnrealizedGain/Loss
+"My Betterment Account",test-account-number,VEA,15.968728,01/01/1999,732.32,668.93,63.39,9.48
+"My Betterment Account",test-account-number,VTV,1.588803,01/01/1999,228.07,205.74,22.32,10.85
+"My Betterment Account",test-account-number,VBR,0.934102,01/01/1999,159.62,141.74,17.87,12.61
+"My Betterment Account",test-account-number,VWO,9.002826,01/01/1999,386.13,350.48,35.65,10.17
+"My Betterment Account",test-account-number,VEA,8.150523,01/01/1999,373.78,366.03,7.74,2.12
+"My Betterment Account",test-account-number,VBR,0.993291,01/01/1999,169.74,162.85,6.89,4.23
+"My Betterment Account",test-account-number,VOE,0.594378,01/01/1999,85.54,82.25,3.29,4.0
+"My Betterment Account",test-account-number,VWO,2.350059,01/01/1999,100.79,99.28,1.50,1.51
+"My Betterment Account",test-account-number,VOE,0.028746,01/01/1999,4.13,3.91,0.22,5.81

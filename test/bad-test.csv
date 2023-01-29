@@ -1,0 +1,4 @@
+Account,Account #,Symbol,Shares,PurchaseDate,MarketValue,CostBasis,$UnrealizedGain/Loss,%UnrealizedGain/Loss
+"My Betterment Account",test-account-number,VEA,15.968728,01/01/1999,732.32,668.93,63.39,9.48
+"My Betterment Account",test-account-number,VTV,invalid-shares,01/01/1999,228.07,205.74,22.32,10.85
+"My Betterment Account",test-account-number,VEA,0.934102,01/01/1999,159.62,141.74,17.87,12.61
