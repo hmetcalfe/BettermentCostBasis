@@ -20,11 +20,11 @@ func main() {
 
 	logEntry.Infof("Processing Cost Basis CSV File at path: %s", *csvFilePath)
 
-	err := processor.ProcessCSV(*csvFilePath)
+	err := processor.ReadCSV(*csvFilePath)
 	if err != nil {
-
+		const logText = "Error while reading the Betterment Cost Basis CSV!"
+		logEntry.WithError(err).Error(logText)
 	}
-
 }
 
 func init() {
