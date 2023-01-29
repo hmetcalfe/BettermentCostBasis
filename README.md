@@ -1,5 +1,5 @@
 # BettermentCostBasis
-A small application to calculate your Betterment portfolio's cost average import from the exportable CSV.
+A small golang application to calculate your Betterment portfolio's cost average import from the exportable CSV.
 
 ## Pre-requesites
 
