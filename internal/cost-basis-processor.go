@@ -21,6 +21,7 @@ const (
 	costBasisCol        = 6
 	unrealizedDollarCol = 7
 	unrealizedPerCol    = 8
+	colMinSize          = unrealizedPerCol + 1
 )
 
 type asset struct {
@@ -127,6 +128,12 @@ func processCSV(csvFile *os.File) error {
 		row, err := reader.Read()
 		if err == io.EOF {
 			break
+		}
+
+		rowLength := len(row)
+
+		if rowLength < colMinSize {
+			return fmt.Errorf("the provided row length is below the minimum required %d", rowLength)
 		}
 
 		if firstRow {
