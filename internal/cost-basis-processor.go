@@ -43,18 +43,16 @@ func cleanNumberOfCommas(number string) string {
 }
 
 func printAccountInformation(account account) {
-	const funcName = "costBasisProcessor.printAccountInformation()"
-	logEntry := log.WithField("function", funcName)
+	logger := log.WithField("function", "costBasisProcessor.printAccountInformation()")
 
 	for _, asset := range account.Assets {
-		logEntry.Infof("Account: %s, Symbol: %s, Shares: %f, CostBasis: %f, MarketValue %f, Cost Basis Per Share %f",
+		logger.Infof("Account: %s, Symbol: %s, Shares: %f, CostBasis: %f, MarketValue %f, Cost Basis Per Share %f",
 			account.Name, asset.Symbol, asset.NumAssets, asset.CostBasis, asset.MarketValue, asset.CostBasisPerShare)
 	}
 }
 
 func processAccountAsset(account *account, asset asset) {
-	const funcName = "costBasisProcessor.processAccountAsset()"
-	logEntry := log.WithField("function", funcName)
+	logger := log.WithField("function", "costBasisProcessor.processAccountAsset()")
 
 	// Check to see if this account already has this asset information
 	// We need to append the data to the existing asset
@@ -62,7 +60,7 @@ func processAccountAsset(account *account, asset asset) {
 	if !found {
 		account.Assets[asset.Symbol] = asset
 
-		logEntry.Infof("Asset %s not found, adding it", asset.Symbol)
+		logger.Infof("Asset %s not found, adding it", asset.Symbol)
 		return
 	}
 
@@ -77,31 +75,30 @@ func processAccountAsset(account *account, asset asset) {
 }
 
 func assetFromRow(row []string) (asset, error) {
-	const funcName = "costBasisProcessor.assetFromRow()"
-	logEntry := log.WithField("function", funcName)
+	logger := log.WithField("function", "costBasisProcessor.assetFromRow()")
 
 	symbol := row[symbolCol]
 
 	numAssets, err := strconv.ParseFloat(cleanNumberOfCommas(row[sharesCol]), 64)
 	if err != nil {
-		logText := fmt.Sprintf("Error while parsing the number of shares into a float: %s", row[sharesCol])
-		logEntry.WithError(err).Error(logText)
+		logText := fmt.Sprintf("error while parsing the number of shares into a float: %s", row[sharesCol])
+		logger.WithError(err).Error(logText)
 
 		return asset{}, fmt.Errorf("%s: %w", logText, err)
 	}
 
 	costBasis, err := strconv.ParseFloat(cleanNumberOfCommas(row[costBasisCol]), 64)
 	if err != nil {
-		logText := fmt.Sprintf("Error while parsing the cost basis into a float: %s", row[costBasisCol])
-		logEntry.WithError(err).Error(logText)
+		logText := fmt.Sprintf("error while parsing the cost basis into a float: %s", row[costBasisCol])
+		logger.WithError(err).Error(logText)
 
 		return asset{}, fmt.Errorf("%s: %w", logText, err)
 	}
 
 	marketValue, err := strconv.ParseFloat(cleanNumberOfCommas(row[marketValueCol]), 64)
 	if err != nil {
-		logText := fmt.Sprintf("Error while parsing the market value into a float: %s", row[marketValueCol])
-		logEntry.WithError(err).Error(logText)
+		logText := fmt.Sprintf("error while parsing the market value into a float: %s", row[marketValueCol])
+		logger.WithError(err).Error(logText)
 
 		return asset{}, fmt.Errorf("%s: %w", logText, err)
 	}
@@ -115,8 +112,7 @@ func assetFromRow(row []string) (asset, error) {
 }
 
 func processCSV(csvFile *os.File) error {
-	const funcName = "costBasisProcessor.processCSV()"
-	logEntry := log.WithField("function", funcName)
+	logger := log.WithField("function", "costBasisProcessor.processCSV()")
 
 	accounts := make(map[string]account)
 
@@ -141,11 +137,11 @@ func processCSV(csvFile *os.File) error {
 			continue
 		}
 
-		logEntry.Infof("The row values %s", row)
+		logger.Infof("The row values %s", row)
 
 		if err != nil {
-			const logText = "Error while reading csv file"
-			logEntry.WithError(err).Error(logText)
+			const logText = "error while reading csv file"
+			logger.WithError(err).Error(logText)
 
 			return fmt.Errorf("%s: %w", logText, err)
 		}
@@ -163,8 +159,8 @@ func processCSV(csvFile *os.File) error {
 		// Process the row converting it to an asset
 		asset, err := assetFromRow(row)
 		if err != nil {
-			const logText = "Error while converting asset from row!"
-			logEntry.WithError(err).Error(logText)
+			const logText = "error while converting asset from row!"
+			logger.WithError(err).Error(logText)
 
 			return fmt.Errorf("%s: %w", logText, err)
 		}
@@ -183,14 +179,13 @@ func processCSV(csvFile *os.File) error {
 }
 
 func ReadCSV(csvFilePath string) error {
-	const funcName = "costBasisProcessor.ReadCSV()"
-	logEntry := log.WithField("function", funcName)
+	logger := log.WithField("function", "costBasisProcessor.ReadCSV()")
 
 	// Open the CSV file to read
 	file, err := os.Open(csvFilePath)
 	if err != nil {
-		const logText = "Failed to open the CSV file!!"
-		logEntry.WithError(err).Error(logText)
+		const logText = "failed to open the csv file"
+		logger.WithError(err).Error(logText)
 
 		return fmt.Errorf("%s: %w", logText, err)
 	}
@@ -199,8 +194,8 @@ func ReadCSV(csvFilePath string) error {
 
 	err = processCSV(file)
 	if err != nil {
-		const logText = "Unable to process the provided CSV!"
-		logEntry.WithError(err).Error(logText)
+		const logText = "unable to process the provided csv"
+		logger.WithError(err).Error(logText)
 
 		return fmt.Errorf("%s: %w", logText, err)
 	}

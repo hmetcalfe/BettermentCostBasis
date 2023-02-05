@@ -14,16 +14,16 @@ var (
 
 func main() {
 	const funcName = "main.main()"
-	logEntry := log.WithField("function", funcName)
+	logger := log.WithField("function", funcName)
 
 	flag.Parse()
 
-	logEntry.Infof("Processing Cost Basis CSV File at path: %s", *csvFilePath)
+	logger.Infof("Processing Cost Basis CSV File at path: %s", *csvFilePath)
 
 	err := processor.ReadCSV(*csvFilePath)
 	if err != nil {
 		const logText = "Error while reading the Betterment Cost Basis CSV!"
-		logEntry.WithError(err).Error(logText)
+		logger.WithError(err).Error(logText)
 	}
 }
 
